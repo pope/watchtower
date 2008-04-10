@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 
 import wsgiref.handlers
+from shifteleven import handlers
 from google.appengine.ext import webapp
 
-class MainHandler(webapp.RequestHandler):
-  def get(self):
-    self.response.out.write('Hello world!')
-
 def main():
-  application = webapp.WSGIApplication([('/', MainHandler)],
+  application = webapp.WSGIApplication([('/', handlers.MainHandler)],
                                        debug=True)
   wsgiref.handlers.CGIHandler().run(application)
 
