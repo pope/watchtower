@@ -2,6 +2,7 @@
 
 import wsgiref.handlers
 from shifteleven import handlers
+from shifteleven.handlers import project
 from google.appengine.ext import webapp
 
 class MockHTTPMethodMiddleware(object):
@@ -15,8 +16,14 @@ class MockHTTPMethodMiddleware(object):
     return self.app(environ, start_response)
 
 def main():
-  application = webapp.WSGIApplication([('/', handlers.MainHandler)],
-                                       debug=True)
+  application = webapp.WSGIApplication([
+        ('/', handlers.MainHandler),
+        ('/projects', project.ProjectCollectionHandler),
+        ('/projects/new', project.NewProjectHandler),
+        ('/projects/(\d+)', project.ProjectHandler),
+        ('/projects/(\d+)/edit', project.EditProjectHandler)
+      ],
+      debug=True)
   wsgiref.handlers.CGIHandler().run(MockHTTPMethodMiddleware(application))
 
 if __name__ == '__main__':
