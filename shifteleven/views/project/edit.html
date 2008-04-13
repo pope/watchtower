@@ -1,0 +1,14 @@
+{% extends "../layouts/base.html" %}
+
+{% block content %}
+<h1>Edit Project - {{ project.name }}</h1>
+
+<form action="/v1/projects/{{ project.key.id }}" method="POST">
+    <input type="hidden" name="_method" value="PUT"/>
+    <table>
+        {{ project_form }}
+    </table>
+    <input type="hidden" name="_id" value="{{ project.key.id }}">
+    <input type="submit"/>
+</form>
+{% endblock content %}

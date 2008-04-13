@@ -1,0 +1,10 @@
+{% extends "../layouts/base.html" %}
+
+{% block content %}
+<h1>Project - {{ project.name }}</h1>
+
+<ul>
+    <li><a href="/v1/projects/{{ project.key.id }}/edit">Edit Project</a></li>
+    <li><a href="/v1/projects/{{ project.key.id }}?_method=DELETE">Delete Project</a></li>
+</ul>
+{% endblock content %}

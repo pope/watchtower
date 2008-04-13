@@ -1,0 +1,12 @@
+{% extends "../layouts/base.html" %}
+
+{% block content %}
+<h1>New Project</h1>
+
+<form action="/v1/projects" method="POST">
+    <table>
+        {{ project_form }}
+    </table>
+    <input type="submit"/>
+</form>
+{% endblock content %}
