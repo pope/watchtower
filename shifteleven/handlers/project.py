@@ -40,10 +40,10 @@ class ProjectHandler(webapp.RequestHandler):
     self.response.out.write(
         template.render('shifteleven/views/project/show.html', {'project': project}))
   
-  def put(self, id):
+  def post(self, id):
     """Update the project.  Redirect to the updated project page"""
     project = findProject(id)
-    project_form = forms.ProjectForm(data=self.request.POST, instance=project)
+    project_form = forms.ProjectForm(data=self.request.params, instance=project)
     if project_form.is_valid():
       project = project_form.save()
       self.redirect("/v1/projects/%d" % project.key().id())
