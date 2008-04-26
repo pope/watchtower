@@ -21,7 +21,7 @@ class ProjectCollectionHandler(webapp.RequestHandler):
     project_form = forms.ProjectForm(data=self.request.POST)
     if project_form.is_valid():
       project = project_form.save()
-      self.redirect("/v1/projects/%d" % project.key().id())
+      self.redirect(ProjectHandler.get_url(project.key().id()))
     else:
       self.response.out.write(
           template.render('shifteleven/views/project/new.html', {'project_form': project_form}))
@@ -46,7 +46,7 @@ class ProjectHandler(webapp.RequestHandler):
     project_form = forms.ProjectForm(data=self.request.params, instance=project)
     if project_form.is_valid():
       project = project_form.save()
-      self.redirect("/v1/projects/%d" % project.key().id())
+      self.redirect(ProjectHandler.get_url(project.key().id()))
     else:
       self.response.out.write(
           template.render('shifteleven/views/project/edit.html', {'project': project, 'project_form': project_form}))
@@ -54,7 +54,7 @@ class ProjectHandler(webapp.RequestHandler):
   def delete(self, id):
     """Delete the project"""
     findProject(id).delete()
-    self.redirect('/v1/projects')
+    self.redirect(ProjectCollectionHandler.get_url())
 
 class EditProjectHandler(webapp.RequestHandler):
   def get(self, id):

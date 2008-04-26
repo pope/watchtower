@@ -6,13 +6,13 @@
 {% if projects %}
 <ul>
     {% for project in projects %}
-    <li><a href="/v1/projects/{{ project.key.id }}">{{ project.name }}</a></li>
+    <li><a href="{% url ProjectHandler project.key.id %}">{{ project.name }}</a></li>
     {% endfor %}
 </ul>
 {% else %}
 <p>There are no projects.  You should create one</p>
 {% endif %}
 
-<p><a href="/v1/projects/new">Create a new Project</p>
+<p><a href="{% url NewProjectHandler %}">Create a new Project</p>
 
 {% endblock content %}
