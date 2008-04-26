@@ -4,7 +4,6 @@ import wsgiref.handlers
 from shifteleven import handlers
 from shifteleven.handlers import project
 from google.appengine.ext import webapp
-import request
 
 class SiteRedirector(webapp.RequestHandler):
   def get(self):

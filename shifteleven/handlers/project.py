@@ -5,7 +5,6 @@ from google.appengine.ext import webapp,db
 from google.appengine.ext.webapp import template
 from shifteleven import forms
 from shifteleven import models
-import logging
 
 def findProject(id):
   return models.Project.get_by_id(int(id))
