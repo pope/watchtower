@@ -1,21 +1,30 @@
 #!/usr/bin/env python
 
+from functools import update_wrapper
 from google.appengine.api import users
 from google.appengine.ext import webapp,db
 from google.appengine.ext.webapp import template
 from shifteleven import forms
 from shifteleven import models
 
-def findProject(id):
-  return models.Project.get_by_id(int(id))
+def find_project(f):
+  """Used to find a project by id.  Once found it passes the project on rather than the id"""
+  def _f(self, id):
+    project = models.Project.get_by_id(int(id))
+    if project:
+      f(self, project)
+    else:
+      self.error(404)
+  return update_wrapper(_f, f)
 
 class ProjectCollectionHandler(webapp.RequestHandler):
+
   def get(self):
     """A list of all the projects"""
     projects = models.Project.all().filter("owner =", users.get_current_user()).fetch(100)
     self.response.out.write(
         template.render('shifteleven/views/project/index.html', {'projects': projects}))
-  
+
   def post(self):
     """Create the new project.  Redirect to the newly created project page"""
     project_form = forms.ProjectForm(data=self.request.POST)
@@ -27,6 +36,7 @@ class ProjectCollectionHandler(webapp.RequestHandler):
           template.render('shifteleven/views/project/new.html', {'project_form': project_form}))
 
 class NewProjectHandler(webapp.RequestHandler):
+
   def get(self):
     """Form for creating a new project"""
     project_form = forms.ProjectForm()
@@ -34,15 +44,16 @@ class NewProjectHandler(webapp.RequestHandler):
         template.render('shifteleven/views/project/new.html', {'project_form': project_form}))
 
 class ProjectHandler(webapp.RequestHandler):
-  def get(self, id):
+
+  @find_project
+  def get(self, project):
     """Show the details of a project"""
-    project = findProject(id)
     self.response.out.write(
         template.render('shifteleven/views/project/show.html', {'project': project}))
-  
-  def post(self, id):
+
+  @find_project
+  def post(self, project):
     """Update the project.  Redirect to the updated project page"""
-    project = findProject(id)
     project_form = forms.ProjectForm(data=self.request.params, instance=project)
     if project_form.is_valid():
       project = project_form.save()
@@ -50,16 +61,18 @@ class ProjectHandler(webapp.RequestHandler):
     else:
       self.response.out.write(
           template.render('shifteleven/views/project/edit.html', {'project': project, 'project_form': project_form}))
-  
-  def delete(self, id):
+
+  @find_project
+  def delete(self, project):
     """Delete the project"""
-    findProject(id).delete()
+    project.delete()
     self.redirect(ProjectCollectionHandler.get_url())
 
 class EditProjectHandler(webapp.RequestHandler):
-  def get(self, id):
+
+  @find_project
+  def get(self, project):
     """Form for editing the project"""
-    project = findProject(id)
     project_form = forms.ProjectForm(instance=project)
     self.response.out.write(
         template.render('shifteleven/views/project/edit.html', {'project': project, 'project_form': project_form}))
