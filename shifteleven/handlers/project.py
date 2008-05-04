@@ -4,8 +4,7 @@ from functools import update_wrapper
 from google.appengine.api import users
 from google.appengine.ext import webapp,db
 from google.appengine.ext.webapp import template
-from shifteleven import forms
-from shifteleven import models
+from shifteleven import forms, handlers, models
 
 def find_project(f):
   """Used to find a project by id.  Once found it passes the project on rather than the id"""
@@ -18,13 +17,14 @@ def find_project(f):
   return update_wrapper(_f, f)
 
 class ProjectCollectionHandler(webapp.RequestHandler):
-
+  @handlers.login_required
   def get(self):
     """A list of all the projects"""
     projects = models.Project.all().filter("owner =", users.get_current_user()).fetch(100)
     self.response.out.write(
         template.render('shifteleven/views/project/index.html', {'projects': projects}))
 
+  @handlers.login_required
   def post(self):
     """Create the new project.  Redirect to the newly created project page"""
     project_form = forms.ProjectForm(data=self.request.POST)
@@ -36,7 +36,7 @@ class ProjectCollectionHandler(webapp.RequestHandler):
           template.render('shifteleven/views/project/new.html', {'project_form': project_form}))
 
 class NewProjectHandler(webapp.RequestHandler):
-
+  @handlers.login_required
   def get(self):
     """Form for creating a new project"""
     project_form = forms.ProjectForm()
@@ -44,13 +44,14 @@ class NewProjectHandler(webapp.RequestHandler):
         template.render('shifteleven/views/project/new.html', {'project_form': project_form}))
 
 class ProjectHandler(webapp.RequestHandler):
-
+  @handlers.login_required
   @find_project
   def get(self, project):
     """Show the details of a project"""
     self.response.out.write(
         template.render('shifteleven/views/project/show.html', {'project': project}))
 
+  @handlers.login_required
   @find_project
   def post(self, project):
     """Update the project.  Redirect to the updated project page"""
@@ -62,6 +63,7 @@ class ProjectHandler(webapp.RequestHandler):
       self.response.out.write(
           template.render('shifteleven/views/project/edit.html', {'project': project, 'project_form': project_form}))
 
+  @handlers.login_required
   @find_project
   def delete(self, project):
     """Delete the project"""
@@ -69,7 +71,7 @@ class ProjectHandler(webapp.RequestHandler):
     self.redirect(ProjectCollectionHandler.get_url())
 
 class EditProjectHandler(webapp.RequestHandler):
-
+  @handlers.login_required
   @find_project
   def get(self, project):
     """Form for editing the project"""

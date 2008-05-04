@@ -7,13 +7,10 @@ handlers:
 - url: /assets
   static_dir: assets
 
-- url: /v1/.*
-  script: main.py
-  login: required
-
 - url: /admin/.*
   script: $PYTHON_LIB/google/appengine/ext/admin
   login: admin
   
 - url: /.*
   script: main.py
+  
